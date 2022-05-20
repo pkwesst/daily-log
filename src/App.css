@@ -42,7 +42,7 @@ body {
   padding-left: 20px;
   padding-right: 20px;
 
-  font-size: 18px;
+  font-size: 15px;
 
   white-space: nowrap;
   font-family: "Noto Sans KR";
@@ -95,5 +95,32 @@ header .head_btn_right {
 }
 
 header button {
+  font-family: "Noto Sans KR";
+}
+
+/* DiaryList */
+.DiaryList .menu_wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.DiaryList .menu_wrapper .right_col {
+  flex-grow: 1; /* 남은 모든 영역 크기 차지*/
+}
+
+.DiaryList .menu_wrapper .right_col button {
+  width: 100%;
+  height: 40px;
+}
+
+.DiaryList .ControlMenu {
+  margin-right: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ececec;
+  cursor: pointer;
   font-family: "Noto Sans KR";
 }
