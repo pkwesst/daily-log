@@ -1,4 +1,4 @@
-import React, { useReducer, useRef } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -10,16 +10,12 @@ import Diary from "./pages/Diary";
 
 const reducer = (state, action) => {
   let newState = [];
-
   switch (action.type) {
     case "INIT": {
       return action.data;
     }
     case "CREATE": {
-      const newItem = {
-        ...action.data,
-      };
-      newState = [newItem, ...state];
+      newState = [action.data, ...state];
       break;
     }
     case "REMOVE": {
@@ -35,47 +31,30 @@ const reducer = (state, action) => {
     default:
       return state;
   }
+
+  localStorage.setItem("diary", JSON.stringify(newState));
   return newState;
 };
 
 export const DiaryStateContext = React.createContext();
 export const DiaryDispatchContext = React.createContext();
 
-const dummyData = [
-  {
-    id: 1,
-    emotion: 1,
-    content: "일기 #1",
-    date: 1652875838136,
-  },
-  {
-    id: 2,
-    emotion: 2,
-    content: "일기 #2",
-    date: 1652875838137,
-  },
-  {
-    id: 3,
-    emotion: 3,
-    content: "일기 #3",
-    date: 1652875838138,
-  },
-  {
-    id: 4,
-    emotion: 4,
-    content: "일기 #4",
-    date: 1652875838139,
-  },
-  {
-    id: 5,
-    emotion: 5,
-    content: "일기 #5",
-    date: 1652875838140,
-  },
-];
-
 function App() {
-  const [data, dispatch] = useReducer(reducer, dummyData);
+  const [data, dispatch] = useReducer(reducer, []);
+
+  useEffect(() => {
+    const localData = localStorage.getItem("diary");
+    if (localData) {
+      const diaryList = JSON.parse(localData).sort(
+        (a, b) => parseInt(b.id) - parseInt(a.id)
+      );
+
+      if (diaryList.length >= 1) {
+        dataId.current = parseInt(diaryList[0].id) + 1;
+        dispatch({ type: "INIT", data: diaryList });
+      }
+    }
+  }, []);
 
   const dataId = useRef(0);
   // CREATE
@@ -110,7 +89,13 @@ function App() {
 
   return (
     <DiaryStateContext.Provider value={data}>
-      <DiaryDispatchContext.Provider value={{ onCreate, onEdit, onRemove }}>
+      <DiaryDispatchContext.Provider
+        value={{
+          onCreate,
+          onEdit,
+          onRemove,
+        }}
+      >
         <BrowserRouter>
           <div className="App">
             <Routes>

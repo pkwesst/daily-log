@@ -1,10 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { DiaryStateContext } from "../App";
-import MyButton from "../components/MyButton";
+import { getStringDate } from "../util/date";
+import { emotionList } from "../util/emotion";
+
 import MyHeader from "../components/MyHeader";
-import { getStringDate } from "../util/date.js";
-import { emotionList } from "../util/emotion.js";
+import MyButton from "../components/MyButton";
 
 const Diary = () => {
   const { id } = useParams();
@@ -13,10 +14,16 @@ const Diary = () => {
   const [data, setData] = useState();
 
   useEffect(() => {
+    const titleElement = document.getElementsByTagName("title")[0];
+    titleElement.innerHTML = `감정 일기장 - ${id}번 일기`;
+  }, []);
+
+  useEffect(() => {
     if (diaryList.length >= 1) {
       const targetDiary = diaryList.find(
         (it) => parseInt(it.id) === parseInt(id)
       );
+
       if (targetDiary) {
         // 일기가 존재할 때
         setData(targetDiary);
@@ -29,10 +36,8 @@ const Diary = () => {
   }, [id, diaryList]);
 
   if (!data) {
-    // data가 falsy하다면(data가 없다면)
     return <div className="DiaryPage">로딩중입니다...</div>;
   } else {
-    // data가 존재할 경우
     const curEmotionData = emotionList.find(
       (it) => parseInt(it.emotion_id) === parseInt(data.emotion)
     );

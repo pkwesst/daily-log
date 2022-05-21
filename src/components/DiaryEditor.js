@@ -1,12 +1,13 @@
-import { useState, useRef, useContext, useEffect } from "react";
+import { useState, useRef, useContext, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { DiaryDispatchContext } from "../App.js";
-import { getStringDate } from "../util/date.js";
-import { emotionList } from "../util/emotion.js";
+import { DiaryDispatchContext } from "./../App.js";
 
 import MyHeader from "./MyHeader";
 import MyButton from "./MyButton";
 import EmotionItem from "./EmotionItem";
+
+import { getStringDate } from "../util/date.js";
+import { emotionList } from "../util/emotion.js";
 
 const DiaryEditor = ({ isEdit, originData }) => {
   const contentRef = useRef();
@@ -14,10 +15,10 @@ const DiaryEditor = ({ isEdit, originData }) => {
   const [emotion, setEmotion] = useState(3);
   const [date, setDate] = useState(getStringDate(new Date()));
 
-  const { onCreate, onEdit } = useContext(DiaryDispatchContext);
-  const handleClickEmote = (emotion) => {
+  const { onCreate, onEdit, onRemove } = useContext(DiaryDispatchContext);
+  const handleClickEmote = useCallback((emotion) => {
     setEmotion(emotion);
-  };
+  }, []);
   const navigate = useNavigate();
 
   const handleSubmit = () => {
@@ -25,6 +26,7 @@ const DiaryEditor = ({ isEdit, originData }) => {
       contentRef.current.focus();
       return;
     }
+
     if (
       window.confirm(
         isEdit ? "일기를 수정하시겠습니까?" : "새로운 일기를 작성하시겠습니까?"
@@ -35,7 +37,14 @@ const DiaryEditor = ({ isEdit, originData }) => {
       } else {
         onEdit(originData.id, date, content, emotion);
       }
-      onCreate(date, content, emotion);
+    }
+
+    navigate("/", { replace: true });
+  };
+
+  const handleRemove = () => {
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      onRemove(originData.id);
       navigate("/", { replace: true });
     }
   };
@@ -55,10 +64,19 @@ const DiaryEditor = ({ isEdit, originData }) => {
         leftChild={
           <MyButton text={"< 뒤로가기"} onClick={() => navigate(-1)} />
         }
+        rightChild={
+          isEdit && (
+            <MyButton
+              text={"삭제하기"}
+              type={"negative"}
+              onClick={handleRemove}
+            />
+          )
+        }
       />
       <div>
         <section>
-          <h4>오늘 날짜</h4>
+          <h4>오늘은 언제인가요?</h4>
           <div className="input_box">
             <input
               className="input_date"
@@ -83,7 +101,7 @@ const DiaryEditor = ({ isEdit, originData }) => {
         </section>
         <section>
           <h4>오늘의 일기</h4>
-          <div className="input_box_text_wrapper">
+          <div className="input_box text_wrapper">
             <textarea
               placeholder="오늘은 어땠나요"
               ref={contentRef}
