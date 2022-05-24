@@ -15,7 +15,7 @@ const Diary = () => {
 
   useEffect(() => {
     const titleElement = document.getElementsByTagName("title")[0];
-    titleElement.innerHTML = `감정 일기장 - ${id}번 일기`;
+    titleElement.innerHTML = `My Daily Log - ${id} 번 일기`;
   }, []);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const Diary = () => {
                 `diary_img_wrapper_${data.emotion}`,
               ].join(" ")}
             >
-              <img src={curEmotionData.emotion_img} />
+              <img src={curEmotionData.emotion_img} alt="emotion" />
               <div className="emotion_descript">
                 {curEmotionData.emotion_descript}
               </div>
